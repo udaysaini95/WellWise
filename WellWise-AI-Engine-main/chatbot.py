@@ -11,8 +11,9 @@ CORS(app)
 
 USER_DATA_FILE = "user_data.txt"
 
-GEMINI_API_KEY = "AIzaSyBuNG6GQFZq5D1ZmUNkp5E_nTUrJqBwoXM"
-genai.configure(api_key=GEMINI_API_KEY)
+GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY", "")
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
 
 @app.route("/chat", methods=["POST"])
 def chat():
