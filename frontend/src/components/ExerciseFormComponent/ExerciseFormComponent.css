@@ -1,0 +1,43 @@
+/* File: DietFormComponent.css */
+
+/* The main container that enables the 3D perspective */
+.flip-container {
+  perspective: 1000px;
+  width: 100%;
+  max-width: 1152px; /* Corresponds to max-w-6xl */
+  margin: auto;
+}
+
+/* This is the element that will actually flip */
+.flipper {
+  transition: 0.8s;
+  transform-style: preserve-3d;
+  position: relative;
+  width: 100%;
+}
+
+/* The front and back sides of the card */
+.front,
+.back {
+  backface-visibility: hidden; /* Hides the side facing away from the user */
+  width: 100%;
+  position: absolute; /* Stack them on top of each other */
+  top: 0;
+  left: 0;
+}
+
+/* The front side is visible by default */
+.front {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+/* The back side is initially flipped and hidden */
+.back {
+  transform: rotateY(180deg);
+}
+
+/* This class is added to the flipper to trigger the animation */
+.flip-container.show-results .flipper {
+  transform: rotateY(180deg);
+}

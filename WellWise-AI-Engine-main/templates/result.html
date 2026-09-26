@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WellWise-M | Prediction Result</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Include Chart.js library for creating graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container result-container">
+        <h1>Your Health Outlook</h1>
+
+        <!-- Narrative Summary Section -->
+        <div class="summary-box">
+            <p>{{ data.summary }}</p>
+        </div>
+        
+        <div class="main-prediction-grid">
+            <!-- Prediction Gauge -->
+            <div class="prediction-box">
+                <p class="prediction-label">Predicted Life Expectancy</p>
+                <p class="prediction-value">{{ data.prediction }} years</p>
+                <div class="gauge-container">
+                    <canvas id="leGauge"></canvas>
+                </div>
+            </div>
+            <!-- Health Profile Radar Chart -->
+            <div class="radar-chart-container">
+                 <h3>Your Health Profile</h3>
+                 <canvas id="healthRadarChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Lifestyle Impact Bar Chart -->
+        <h2>Key Lifestyle Impacts</h2>
+        <div class="impact-chart-container">
+            <canvas id="impactBarChart"></canvas>
+        </div>
+
+        <!-- Action Plan / Recommendations Section -->
+        {% if data.recommendations %}
+        <div class="recommendations-container">
+            <h2>Your Action Plan</h2>
+            <p>Focus on these key areas to make the biggest positive impact on your long-term health.</p>
+            
+            <div class="recommendations-grid">
+                {% for rec in data.recommendations %}
+                <div class="rec-card">
+                    <h3>{{ rec.title }}</h3>
+                    <p>{{ rec.text | safe }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <a href="/" class="submit-btn">Run a New Prediction</a>
+    </div>
+
+    <script>
+        // Securely receive the data object from the Flask backend
+        const chartData = {{ data | tojson }};
+
+        // --- 1. Life Expectancy Gauge Chart ---
+        if (document.getElementById('leGauge')) {
+            const leGaugeCtx = document.getElementById('leGauge').getContext('2d');
+            new Chart(leGaugeCtx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [chartData.current_age, chartData.prediction - chartData.current_age, 100 - chartData.prediction],
+                        backgroundColor: ['#3498db', '#2ecc71', '#ecf0f1'],
+                        borderColor: '#ffffff', borderWidth: 3, circumference: 180, rotation: 270,
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false }}, cutout: '70%'}
+            });
+        }
+
+        // --- 2. Lifestyle Impact Bar Chart ---
+        if (document.getElementById('impactBarChart') && chartData.adjustments) {
+            const impactBarCtx = document.getElementById('impactBarChart').getContext('2d');
+            const sortedAdjustments = chartData.adjustments.sort((a, b) => a.impact - b.impact);
+            new Chart(impactBarCtx, {
+                type: 'bar',
+                data: {
+                    labels: sortedAdjustments.map(adj => adj.factor),
+                    datasets: [{
+                        label: 'Impact on Years',
+                        data: sortedAdjustments.map(adj => adj.impact),
+                        backgroundColor: sortedAdjustments.map(adj => adj.impact > 0 ? 'rgba(46, 204, 113, 0.7)' : 'rgba(231, 76, 60, 0.7)'),
+                        borderColor: sortedAdjustments.map(adj => adj.impact > 0 ? '#2ecc71' : '#e74c3c'),
+                        borderWidth: 1
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false }}, scales: { x: { title: { display: true, text: 'Years Added / Removed'}}}}
+            });
+        }
+
+        // --- 3. Health Profile Radar Chart ---
+        if (document.getElementById('healthRadarChart') && chartData.health_scores) {
+            const radarCtx = document.getElementById('healthRadarChart').getContext('2d');
+            const scores = chartData.health_scores;
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Diet', 'Exercise', 'Sleep', 'Stress Management', 'Habits (Smoking/Alcohol)'],
+                    datasets: [{
+                        label: 'Your Score (out of 5)',
+                        data: [scores.Diet, scores.Exercise, scores.Sleep, scores.Stress, scores.Habits],
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)', borderColor: '#3498db',
+                        pointBackgroundColor: '#3498db', pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff', pointHoverBorderColor: '#3498db'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { angleLines: { color: '#dfe6e9' }, grid: { color: '#dfe6e9' }, pointLabels: { font: { size: 12 } }, suggestedMin: 0, suggestedMax: 5 }}, plugins: { legend: { position: 'top' }}}
+            });
+        }
+    </script>
+</body>
+</html>
+

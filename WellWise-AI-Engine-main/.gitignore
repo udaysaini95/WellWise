@@ -1,0 +1,18 @@
+# Python Virtual Environments
+venv-data-science/
+venv-webapp/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# VS Code settings
+.vscode
+login/flask-mysql-auth-system-main/requirements.txt
+login/flask-mysql-auth-system-main/app.py
+login/flask-mysql-auth-system-main/README.md
+login/flask-mysql-auth-system-main/templates/app.html
+login/flask-mysql-auth-system-main/templates/dashboard.html
+login/flask-mysql-auth-system-main/templates/index.html
+login/flask-mysql-auth-system-main/templates/login.html
+login/flask-mysql-auth-system-main/templates/register.html
