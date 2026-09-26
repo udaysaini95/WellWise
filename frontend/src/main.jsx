@@ -19,7 +19,7 @@ import Step2 from "./components/About/Step2.jsx";
 import Step3 from './components/About/Step3.jsx';
 import Step4 from './components/About/Step4.jsx';
 import Step5 from './components/About/Step5.jsx';
-import SubmitPage from './components/About/SubmitPage.JSX';
+import SubmitPage from './components/About/SubmitPage.jsx';
 import ResultPage from "./components/Result/Result.jsx";
 import { DietFormComponent } from "./components/DietFormComponent/DietFormComponent.jsx";
 import WellAI from './components/WellAI/WellAI.jsx';
